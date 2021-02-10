@@ -1,0 +1,25 @@
+<div class="team-list">
+    <!-- <mat-list>
+        <a mat-list-item *ngFor="let team of teams">
+            {{team.name}}
+        </a>
+    </mat-list> -->
+
+    <div class="teams-nav">
+
+
+        <mat-nav-list>
+
+
+            <a mat-list-item *ngFor=" let team of teams" [routerLink]="[team.id]" routerLinkActive="active-team-item" class="team-item">
+                    {{team.name}}
+                </a>
+        </mat-nav-list>
+
+    </div>
+
+    <div class="team-main">
+        <router-outlet></router-outlet>
+    </div>
+
+</div>

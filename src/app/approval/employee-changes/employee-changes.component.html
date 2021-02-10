@@ -1,0 +1,55 @@
+<div class="changes-container" *ngIf="approvalItem">
+    <div class="original" *ngIf="originalEmployee">
+        <div class="header">
+            <span *ngIf="isEdit" class="mat-subheading-4">Original:</span>
+            <span *ngIf="isDelete" class=" mat-subheading-4 ">Deleted:</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div [ngClass]="{'old-red': isFieldChanged(originalEmployee.firstName, changedEmployee?.firstName)}">
+            <span class="label">First Name:</span> {{originalEmployee.firstName}}
+        </div>
+        <div [ngClass]="{'old-red': isFieldChanged(originalEmployee.lastName, changedEmployee?.lastName)}">
+            <span class="label">Last Name:</span> {{originalEmployee.lastName}}
+        </div>
+        <div [ngClass]="{'old-red': isFieldChanged(originalEmployee.email, changedEmployee?.email)}">
+            <span class="label">Email:</span> {{originalEmployee.email}}
+        </div>
+        <div [ngClass]="{'old-red': isFieldChanged(originalEmployee.phone, changedEmployee?.phone)}">
+            <span class="label">Phone:</span> {{originalEmployee.phone}}
+        </div>
+        <div [ngClass]="{'old-red': isFieldChanged(originalEmployee.address, changedEmployee?.address)}">
+            <span class="label">Address:</span> {{originalEmployee.address}}
+        </div>
+        <div [ngClass]="{'old-red': areRolesChanged(originalEmployee.roles, changedEmployee?.roles)}">
+            <span class="label">Roles:</span>
+            <div class="role" *ngFor="let role of originalEmployee.roles">{{role | roledisplay}}</div>
+        </div>
+    </div>
+
+    <div class="changed" *ngIf="changedEmployee">
+        <div class="header">
+            <span *ngIf="isAdd" class=" mat-subheading-4 ">New:</span>
+            <span *ngIf="isEdit" class=" mat-subheading-4 ">Changed:</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div [ngClass]="{ 'new-green': isFieldChanged(originalEmployee?.firstName, changedEmployee.firstName)} ">
+            <span class="label ">First Name:</span> {{changedEmployee.firstName}}
+        </div>
+        <div [ngClass]="{ 'new-green': isFieldChanged(originalEmployee?.lastName, changedEmployee.lastName)} ">
+            <span class="label ">Last Name:</span> {{changedEmployee.lastName}}
+        </div>
+        <div [ngClass]="{ 'new-green': isFieldChanged(originalEmployee?.email, changedEmployee.email)} ">
+            <span class="label ">Email:</span> {{changedEmployee.email}}
+        </div>
+        <div [ngClass]="{ 'new-green': isFieldChanged(originalEmployee?.phone, changedEmployee.phone)} ">
+            <span class="label ">Phone:</span> {{changedEmployee.phone}}
+        </div>
+        <div [ngClass]="{ 'new-green': isFieldChanged(originalEmployee?.address, changedEmployee.address)} ">
+            <span class="label ">Address:</span> {{changedEmployee.address}}
+        </div>
+        <div [ngClass]="{ 'new-green': areRolesChanged(originalEmployee?.roles, changedEmployee.roles)} ">
+            <span class="label ">Roles:</span>
+            <div class="role " *ngFor="let role of changedEmployee.roles ">{{role | roledisplay}}</div>
+        </div>
+    </div>
+</div>

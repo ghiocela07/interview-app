@@ -1,0 +1,45 @@
+<div class="approval-container">
+    <h2 class="mat-title title">
+        Pending changes</h2>
+    <div *ngIf="changesList.length === 0">
+        <p>No pending changes.</p>
+    </div>
+    <table *ngIf="changesList.length !== 0" mat-table [dataSource]="changesList" multiTemplateDataRows class="mat-elevation-z8">
+        <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef> Approval Action </th>
+            <td mat-cell *matCellDef="let change"> {{change.action}} </td>
+        </ng-container>
+        <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Approval Type</th>
+            <td mat-cell *matCellDef="let change"> {{change.type}} </td>
+        </ng-container>
+        <ng-container matColumnDef="approve">
+            <th mat-header-cell *matHeaderCellDef> Approve </th>
+            <td mat-cell *matCellDef="let change">
+                <button mat-icon-button class="approve-icon" (click)="onApprove(change)">
+                    <mat-icon>done</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="reject">
+            <th mat-header-cell *matHeaderCellDef> Reject </th>
+            <td mat-cell *matCellDef="let change">
+                <button mat-icon-button color="warn" (click)="onReject(change)">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let change" [attr.colspan]="columnsToDisplay.length">
+                <div class="example-element-detail" [@detailExpand]="change == expandedElement ? 'expanded' : 'collapsed'">
+                    <app-employee-changes [approvalItem]="change"></app-employee-changes>
+                </div>
+            </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+        <tr mat-row *matRowDef="let change; columns: columnsToDisplay;" class="example-element-row" [class.example-expanded-row]="expandedElement === change" (click)="expandedElement = expandedElement === change ? null : change">
+        </tr>
+        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+    </table>
+
+</div>

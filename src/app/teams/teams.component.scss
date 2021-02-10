@@ -1,0 +1,26 @@
+.team-list {
+    display: inline-flex;
+}
+
+.teams-nav {
+    background: rgb(103 58 183 / 64%);
+    margin-left: -40px;
+    height: 88vw;
+    width: fit-content;
+}
+
+.team-item {
+    color: white;
+}
+
+.active-team-item {
+    background: rgba(103, 58, 183, 0.84);
+}
+
+.mat-list-base {
+    padding-top: 0px;
+}
+
+.team-main {
+    margin: 40px;
+}

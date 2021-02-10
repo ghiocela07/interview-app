@@ -1,0 +1,23 @@
+.side-menu {
+    height: 100%;
+    position: absolute;
+    background: rgb(103 58 183 / 84%);
+}
+
+.main {
+    margin-left: 40px;
+    height: 88vw;
+}
+
+.link-icon {
+    font-size: 30px;
+    color: white;
+}
+
+.sidenav-active-link-item {
+    background: #673ab7;
+}
+
+.mat-list-base {
+    padding-top: 0px;
+}

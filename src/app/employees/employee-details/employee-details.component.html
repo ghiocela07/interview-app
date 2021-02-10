@@ -1,0 +1,17 @@
+<div *ngIf="employee" class="details-container">
+    <div class="details mat-elevation-z8">
+        <span class="details-label">More details:</span>
+        <div>
+            <mat-icon class="detail-icon">phone</mat-icon>{{employee.phone}}
+        </div>
+        <div>
+            <mat-icon class="detail-icon">home</mat-icon>{{employee.address}}
+        </div>
+    </div>
+    <div *ngIf="employee.roles" class="roles  mat-elevation-z8">
+        <span class="roles-label">Roles:</span>
+        <div class="role" *ngFor="let role of employee.roles">
+            {{role | roledisplay}}</div>
+    </div>
+
+</div>
