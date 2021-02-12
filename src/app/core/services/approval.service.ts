@@ -10,6 +10,7 @@ import { ApprovalStatus } from '../models/approval-status.enum';
 import { ApprovalType } from '../models/approval-type.enum';
 import { EmployeeService } from './employee.service';
 import { NotificationService } from './notification.service';
+import { TeamsService } from './teams.service';
 
 
 @Injectable({ providedIn: 'root' })
@@ -19,15 +20,17 @@ export class ApprovalService {
 
     private approvalQueue: Approval[] = [];
 
-    constructor(private employeesService: EmployeeService, private notificatioNService: NotificationService) { }
+    constructor(private employeesService: EmployeeService, private notificatioNService: NotificationService,
+                private teamService: TeamsService) { }
 
 
-    getApprovalQueue(): Approval[] {
+    public getApprovalQueue(): Approval[] {
         return this.approvalQueue.slice();
     }
 
-    addToQueue(action: ApprovalAction, type: ApprovalType,
-               original: Team | Employee | undefined, changed: Team | Employee | undefined): void {
+    public addToQueue(action: ApprovalAction, type: ApprovalType,
+                      original: Team | Employee | undefined,
+                      changed: Team | Employee | undefined): void {
         const id = Math.round(Math.random() * 10);
 
         this.approvalQueue.push(new Approval(
@@ -42,29 +45,71 @@ export class ApprovalService {
         this.approvalListChanged.next(this.approvalQueue.slice());
         console.log(this.approvalQueue);
     }
-    rejectChange(change: Approval): void {
+    public rejectChange(change: Approval): void {
         this.notificatioNService.errorNotification(`Request '${change.action + ' ' + change.type}' was rejected!`);
         this.removeFromList(change.id);
     }
-    approveChange(approval: Approval): void {
-
-        switch (approval.type) {
-            case ApprovalType.Employee:
-                this.employeesService.manageEmployee(approval.changed as Employee, approval.action);
-                break;
-            case ApprovalType.Team:
-                break;
-            default:
-                break;
+    public async approveChange(approval: Approval): Promise<void> {
+        try {
+            switch (approval.type) {
+                case ApprovalType.Employee:
+                    await this.manageEmployeeAcions(approval.changed as Employee, approval.action);
+                    break;
+                case ApprovalType.Team:
+                    await this.manageTeamAcions(approval.changed as Team, approval.action);
+                    break;
+                default:
+                    break;
+            }
+            this.notificatioNService.successNotification(`Request '${approval.action + ' ' + approval.type}' was approved!`);
+            this.removeFromList(approval.id);
         }
-        this.notificatioNService.successNotification(`Request '${approval.action + ' ' + approval.type}' was approved!`);
-        this.removeFromList(approval.id);
+        catch { }
     }
 
-    removeFromList(changeId: number): void {
+    private removeFromList(changeId: number): void {
         const rejectedIndex = this.approvalQueue.findIndex((chnage) => chnage.id === changeId);
         this.approvalQueue.splice(rejectedIndex, 1);
         this.approvalListChanged.next(this.approvalQueue.slice());
+    }
+
+    private async manageEmployeeAcions(employee: Employee, action: ApprovalAction): Promise<void> {
+        try {
+            switch (action) {
+                case ApprovalAction.Add:
+                    await this.employeesService.addEmployee(employee);
+                    break;
+                case ApprovalAction.Edit:
+                    await this.employeesService.updateEmployee(employee);
+                    break;
+                case ApprovalAction.Delete:
+                    await this.employeesService.deleteEmployee(employee.id);
+                    await this.teamService.removeDeletedEmployeeFromTeams(employee.id);
+                    break;
+            }
+        }
+        catch (error) {
+            throw (error);
+        }
+    }
+
+    private async manageTeamAcions(team: Team, action: ApprovalAction): Promise<void> {
+        try {
+            switch (action) {
+                case ApprovalAction.Add:
+                    // add team
+                    break;
+                case ApprovalAction.Edit:
+                    await this.teamService.updateTeam(team);
+                    break;
+                case ApprovalAction.Delete:
+                    await this.teamService.deleteTeam(team.id);
+                    break;
+            }
+        }
+        catch (error) {
+            throw (error);
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { Employee } from 'src/app/core/models/employee.model';
@@ -8,18 +8,22 @@ import { EmployeeService } from 'src/app/core/services/employee.service';
 import { ApprovalService } from 'src/app/core/services/approval.service';
 import { ApprovalAction } from 'src/app/core/models/approval-action.enum';
 import { ApprovalType } from 'src/app/core/models/approval-type.enum';
+import { Observable, Subscription } from 'rxjs';
+import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { InformationDialogComponent } from 'src/app/shared/information-dialog/information-dialog.component';
 
 @Component({
   selector: 'app-employee-edit',
   templateUrl: './employee-edit.component.html',
   styleUrls: ['./employee-edit.component.scss']
 })
-export class EmployeeEditComponent implements OnInit {
+export class EmployeeEditComponent implements OnInit, OnDestroy {
 
   public employeeForm: FormGroup | undefined;
   public employee: Employee | undefined;
 
-  public id = -1;
+  public id = 0;
   public editMode = false;
 
   // used for roles chip list
@@ -29,19 +33,26 @@ export class EmployeeEditComponent implements OnInit {
   public addOnBlur = true;
   public readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
+  private originalForm: FormGroup | undefined;
+  private confirmationDialogSubscription: Subscription | undefined;
+
   constructor(private route: ActivatedRoute,
               private router: Router,
-              private employeesService: EmployeeService,
-              private approvalService: ApprovalService) { }
+              private approvalService: ApprovalService,
+              private matDialog: MatDialog) { }
 
   public ngOnInit(): void {
-    this.route.params.subscribe(
-      (params: Params) => {
-        this.id = +params.id;
-        this.editMode = params.id != null;
-        this.initializeForm();
-      }
-    );
+    this.route.data.subscribe(data => {
+      this.employee = data.employeeData.employee;
+      this.editMode = data.employeeData.editMode;
+      this.initializeForm();
+      this.initializeOriginalForm();
+      this.id = this.employee ? this.employee.id : 0;
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.confirmationDialogSubscription?.unsubscribe();
   }
 
   public addRole(event: MatChipInputEvent): void {
@@ -71,17 +82,32 @@ export class EmployeeEditComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    if (this.editMode) {
-      this.approvalService.addToQueue(ApprovalAction.Edit, ApprovalType.Employee, this.employee, this.getEmployeeFromForm());
-    } else {
-      this.approvalService.addToQueue(ApprovalAction.Add, ApprovalType.Employee, undefined, this.getEmployeeFromForm());
+    if (this.hasFormChanges(this.originalForm, this.employeeForm)) {
+      const dialog = this.openConfirmationDialog('Are you sure you want to save?');
+      this.confirmationDialogSubscription = dialog.subscribe((confirm) => {
+        if (confirm) {
+          this.saveEmployee();
+          this.navigateBack();
+        }
+      });
     }
-    this.navigateBack();
-
+    else {
+      this.openInformationDialog();
+    }
   }
 
   public onCancel(): void {
-    this.navigateBack();
+    if (this.hasFormChanges(this.originalForm, this.employeeForm)) {
+      const dialog = this.openConfirmationDialog('You have unsaved chnages. Are you sure you want to cancel?');
+      this.confirmationDialogSubscription = dialog.subscribe((confirm) => {
+        if (confirm) {
+          this.navigateBack();
+        }
+      });
+    }
+    else {
+      this.navigateBack();
+    }
   }
 
   public hasError(controlName: string, errorType: string): boolean | undefined {
@@ -91,11 +117,6 @@ export class EmployeeEditComponent implements OnInit {
   }
 
   private initializeForm(): void {
-    if (this.editMode) {
-      this.employee = this.employeesService.getEmployee(this.id);
-    } else {
-      this.employee = this.employeesService.getNewEmployee();
-    }
 
     const rolesArray = new FormArray([]);
     this.employee?.roles?.forEach(role => {
@@ -114,16 +135,36 @@ export class EmployeeEditComponent implements OnInit {
     });
   }
 
-  private getEmployeeFromForm(): Employee {
-    let id;
-    if (!this.editMode) {
-      id = 0;
-    } else {
-      id = this.id;
-    }
+  private initializeOriginalForm(): void {
 
+    const rolesArray = new FormArray([]);
+    this.employee?.roles?.forEach(role => {
+      rolesArray.push(
+        new FormControl(role, Validators.required)
+      );
+    });
+
+    this.originalForm = new FormGroup({
+      firstName: new FormControl(this.employee?.firstName, [Validators.required]),
+      lastName: new FormControl(this.employee?.lastName, [Validators.required]),
+      email: new FormControl(this.employee?.email, [Validators.required, Validators.email]),
+      phone: new FormControl(this.employee?.phone, [Validators.required]),
+      address: new FormControl(this.employee?.address, [Validators.required]),
+      roles: rolesArray
+    });
+  }
+
+  private saveEmployee(): void {
+    if (this.editMode) {
+      this.approvalService.addToQueue(ApprovalAction.Edit, ApprovalType.Employee, this.employee, this.getEmployeeFromForm());
+    } else {
+      this.approvalService.addToQueue(ApprovalAction.Add, ApprovalType.Employee, undefined, this.getEmployeeFromForm());
+    }
+  }
+
+  private getEmployeeFromForm(): Employee {
     return new Employee(
-      id,
+      this.id,
       this.employeeForm?.value.firstName,
       this.employeeForm?.value.lastName,
       this.employeeForm?.value.email,
@@ -135,5 +176,35 @@ export class EmployeeEditComponent implements OnInit {
 
   private navigateBack(): void {
     this.router.navigateByUrl('/employees');
+  }
+
+  private hasFormChanges(originalForm: FormGroup | undefined, currentForm: FormGroup | undefined): boolean {
+    const originalFormValue = originalForm?.getRawValue();
+    const currentFormValue = currentForm?.getRawValue();
+
+    return JSON.stringify(originalFormValue) !== JSON.stringify(currentFormValue);
+  }
+
+  private openConfirmationDialog(message: string): Observable<boolean> {
+    const dialogRef = this.matDialog.open(ConfirmationDialogComponent, {
+      width: '350px',
+      data: {
+        confirmationMessage: message,
+        pleaseNoteMessage: ''
+      }
+    });
+
+    return dialogRef.afterClosed();
+  }
+
+  private openInformationDialog(): Observable<boolean> {
+    const dialogRef = this.matDialog.open(InformationDialogComponent, {
+      width: '350px',
+      data: {
+        informationMessage: 'There are no changes to save!'
+      }
+    });
+
+    return dialogRef.afterClosed();
   }
 }

@@ -1,13 +1,16 @@
 
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ApprovalAction } from '../core/models/approval-action.enum';
 import { ApprovalType } from '../core/models/approval-type.enum';
 import { Employee } from '../core/models/employee.model';
 import { ApprovalService } from '../core/services/approval.service';
 import { EmployeeService } from '../core/services/employee.service';
+import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
+import { AddEmployeeToTeamComponent } from './add-employee-to-team/add-employee-to-team.component';
 
 
 @Component({
@@ -29,14 +32,18 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   public expandedElement: Employee | null | undefined;
 
   private employeesChangedSubscription: Subscription | undefined;
+  private dialogSubscription: Subscription | undefined;
 
   constructor(private employeeService: EmployeeService,
               private router: Router,
               private route: ActivatedRoute,
-              private approvalService: ApprovalService) { }
+              private approvalService: ApprovalService,
+              private matDialog: MatDialog) { }
 
-  public ngOnInit(): void {
-    this.employees = this.employeeService.getEmployees();
+  public async ngOnInit(): Promise<void> {
+    this.route.data.subscribe(data => {
+      this.employees = data.employees;
+    });
     this.employeesChangedSubscription = this.employeeService.employeesChanged.subscribe((employees: Employee[]) => {
       this.employees = employees;
     });
@@ -44,6 +51,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.employeesChangedSubscription?.unsubscribe();
+    this.dialogSubscription?.unsubscribe();
   }
 
   public onEdit(employee: Employee): void {
@@ -55,8 +63,40 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   public onDelete(employee: Employee): void {
-    // TODO: open confimartion dialog
-    this.approvalService.addToQueue(ApprovalAction.Delete, ApprovalType.Employee, employee, employee);
+    const dialog = this.openDialog();
+    this.dialogSubscription = dialog.subscribe((confirm) => {
+      if (confirm) {
+        this.approvalService.addToQueue(ApprovalAction.Delete, ApprovalType.Employee, employee, employee);
+      }
+    });
+
+  }
+
+  public onAddToTeam(employee: Employee): void{
+    this.openAddToTeamDialog(employee);
+  }
+
+  private openDialog(): Observable<boolean> {
+    const dialogRef = this.matDialog.open(ConfirmationDialogComponent, {
+      width: '350px',
+      data: {
+        confirmationMessage: 'Are you sure you want to delete this employee?',
+        pleaseNoteMessage: 'The employee will be removed from each team where he or she is a team leader or a team member.'
+      }
+    });
+
+    return dialogRef.afterClosed();
+  }
+
+  private openAddToTeamDialog(employeeObj: Employee): Observable<boolean> {
+    const dialogRef = this.matDialog.open(AddEmployeeToTeamComponent, {
+      width: '350px',
+      data: {
+        employee: employeeObj,
+      }
+    });
+
+    return dialogRef.afterClosed();
   }
 
 

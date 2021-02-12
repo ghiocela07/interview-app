@@ -1,0 +1,38 @@
+<div class="changes-container" *ngIf="approvalItem">
+    <div class="original" *ngIf="originalTeam">
+        <div class="header">
+            <span *ngIf="isEdit" class="mat-subheading-4">Original:</span>
+            <span *ngIf="isDelete" class=" mat-subheading-4 ">Deleted:</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div [ngClass]="{'old-red': isNameChanged(originalTeam.name, changedTeam?.name)}">
+            <span class="label">Team Name:</span> {{originalTeam.name}}
+        </div>
+        <div [ngClass]="{'old-red': isTeamLeaderChanged(originalTeam.teamLeader, changedTeam?.teamLeader)}">
+            <span class="label">Team Leader:</span> {{originalTeam.teamLeader?.firstName}} {{originalTeam.teamLeader?.lastName}}
+        </div>
+        <div>
+            <span class="label ">Members:</span>
+            <div [ngClass]="{'old-red': isMemberDeleted(member)}" class=" member " *ngFor="let member of originalTeam.members ">{{member.firstName}} {{member.lastName}}</div>
+        </div>
+    </div>
+
+    <div class="changed " *ngIf="changedTeam ">
+        <div class="header ">
+            <span *ngIf="isAdd " class=" mat-subheading-4 ">New:</span>
+            <span *ngIf="isEdit " class=" mat-subheading-4 ">Changed:</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div [ngClass]="{ 'new-green': isNameChanged(originalTeam?.name, changedTeam?.name)} ">
+            <span class="label ">First Name:</span> {{changedTeam.name}}
+        </div>
+        <div [ngClass]="{ 'new-green': isTeamLeaderChanged(originalTeam?.teamLeader, changedTeam?.teamLeader)} ">
+            <span class="label ">Team Leader:</span> {{changedTeam.teamLeader?.firstName}} {{changedTeam.teamLeader?.lastName}}
+        </div>
+
+        <div>
+            <span class="label ">Members:</span>
+            <div [ngClass]="{'new-green': isMemberAdded(member)}" class="member" *ngFor="let member of changedTeam.members ">{{member.firstName}} {{member.lastName}}</div>
+        </div>
+    </div>
+</div>

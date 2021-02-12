@@ -32,7 +32,8 @@
         <ng-container matColumnDef="expandedDetail">
             <td mat-cell *matCellDef="let change" [attr.colspan]="columnsToDisplay.length">
                 <div class="example-element-detail" [@detailExpand]="change == expandedElement ? 'expanded' : 'collapsed'">
-                    <app-employee-changes [approvalItem]="change"></app-employee-changes>
+                    <app-employee-changes *ngIf="isEmployee(change)" [approvalItem]="change"></app-employee-changes>
+                    <app-team-changes *ngIf="isTeam(change)" [approvalItem]="change"></app-team-changes>
                 </div>
             </td>
         </ng-container>

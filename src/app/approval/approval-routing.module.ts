@@ -9,7 +9,7 @@ import { ApprovalComponent } from './approval.component';
 
 const routes: Routes = [
     {
-        path: 'approval', component: ApprovalComponent, resolve: [EmployeesResolverService, TeamsResolverService]
+        path: 'approval', component: ApprovalComponent
     }
 ];
 @NgModule({

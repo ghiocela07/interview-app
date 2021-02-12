@@ -7,7 +7,7 @@
         <h2 class="mat-title">
             Add new employee</h2>
     </div>
-    <form *ngIf="employeeForm" class="employee-form mat-elevation-z8" [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+    <form *ngIf="employeeForm" class="employee-form mat-elevation-z8" [formGroup]="employeeForm">
         <mat-form-field>
             <mat-label>First Name</mat-label>
             <input type="text" matInput formControlName="firstName">
@@ -45,7 +45,7 @@
             </mat-chip-list>
         </mat-form-field>
         <div class="buttons-div">
-            <button mat-raised-button color="primary" [disabled]="!employeeForm.valid" class="submit-button form-button" type="submit">Save</button>
+            <button mat-raised-button color="primary" [disabled]="!employeeForm.valid" class="submit-button form-button" (click)="onSubmit()">Save</button>
             <button mat-raised-button (click)="onCancel()" class="form-button">Cancel</button>
         </div>
     </form>

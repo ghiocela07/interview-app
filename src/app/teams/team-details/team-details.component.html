@@ -1,15 +1,16 @@
 <div class="team-detail-container" *ngIf="team">
     <h2 class="mat-title">{{team.name}} Team</h2>
+    <div>
+        <button mat-raised-button color="warn" (click)="onDelete()" class="delete-button">Delete team</button>
+    </div>
     <div class="details">
-        <div class="team-leader">
+        <div *ngIf="team.teamLeader" class="team-leader">
             <mat-card color="primary" class="team-leader-card mat-elevation-z8">
-
                 <app-employee-item [employee]="team.teamLeader"></app-employee-item>
             </mat-card>
         </div>
         <div class="members-list">
             <mat-card *ngFor="let member of team.members" class="member-card mat-elevation-z8">
-
                 <app-employee-item [employee]="member"></app-employee-item>
             </mat-card>
         </div>

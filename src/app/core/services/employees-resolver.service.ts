@@ -8,14 +8,9 @@ import { NotificationService } from './notification.service';
 
 @Injectable({ providedIn: 'root' })
 export class EmployeesResolverService implements Resolve<Employee[]> {
-    constructor(private employeeService: EmployeeService, private notificationService: NotificationService) { }
+    constructor(private employeeService: EmployeeService) { }
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Employee[] | Observable<Employee[]> {
-        const employees = this.employeeService.getEmployees();
-        if (employees.length === 0) {
-            return this.employeeService.getEmployeesFromApi();
-        }
-
-        return employees;
+   public async  resolve(): Promise<Employee[]> {
+        return await this.employeeService.getEmployees();
     }
 }

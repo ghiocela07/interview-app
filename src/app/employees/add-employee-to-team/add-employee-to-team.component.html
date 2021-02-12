@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>Add employee to a team</h1>
+<div mat-dialog-content>
+    <p *ngIf="!teams">No teams available for this employee.</p>
+    <div *ngIf="teams">
+        <p>You can select multiple teams</p>
+        <mat-form-field class="teams-field">
+            <mat-label>Teams</mat-label>
+            <mat-select [(value)]="selectedTeams" multiple>
+                <mat-option *ngFor="let team of teams" [value]="team">{{team.name}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+</div>
+<div mat-dialog-actions class="actions">
+    <button mat-button [disabled]="isSaveButtonDisabled" (click)="onSave()"> Save</button>
+    <button mat-button (click)="onCancel()" tabindex="-1">Cancel</button>
+</div>

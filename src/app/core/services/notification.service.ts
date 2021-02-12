@@ -6,21 +6,25 @@ export class NotificationService {
 
     constructor(private matSnackBar: MatSnackBar) { }
 
-    successNotification(message: string): void {
-        this.matSnackBar.open(message, 'OK', {
-            duration: 2000,
-            panelClass: ['success-snackbar']
-        });
+    public successNotification(message: string): void {
+        setTimeout(() => {
+            this.matSnackBar.open(message, 'OK', {
+                duration: 5000,
+                panelClass: ['success-snackbar']
+            });
+        }, 1000);
     }
 
-    infoNotification(message: string): void {
-        this.matSnackBar.open(message, 'OK', {
-            duration: 5000,
-            panelClass: ['info-snackbar']
-        });
+    public infoNotification(message: string): void {
+        setTimeout(() => {
+            this.matSnackBar.open(message, 'OK', {
+                duration: 5000,
+                panelClass: ['info-snackbar']
+            });
+        }, 1000);
     }
 
-    errorNotification(message: string): void {
+    public errorNotification(message: string): void {
         this.matSnackBar.open(message, 'OK', {
             duration: 10000,
             panelClass: ['error-snackbar']

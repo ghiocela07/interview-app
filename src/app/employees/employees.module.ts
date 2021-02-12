@@ -8,6 +8,7 @@ import { EmployeeDetailsComponent } from './employee-details/employee-details.co
 import { SharedModule } from '../shared/shared.module';
 import { EmployeeEditComponent } from './employee-edit/employee-edit.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AddEmployeeToTeamComponent } from './add-employee-to-team/add-employee-to-team.component';
 
 
 
@@ -15,7 +16,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     declarations: [
         EmployeesComponent,
         EmployeeDetailsComponent,
-        EmployeeEditComponent
+        EmployeeEditComponent,
+        AddEmployeeToTeamComponent
     ],
     imports: [
         EmployeesRoutingModule,
@@ -25,7 +27,8 @@ import { ReactiveFormsModule } from '@angular/forms';
         ReactiveFormsModule
     ],
     exports: [
-        EmployeesComponent
+        EmployeesComponent,
+        AddEmployeeToTeamComponent
     ]
 })
 export class EmployeesModule {

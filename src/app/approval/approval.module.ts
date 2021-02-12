@@ -5,13 +5,13 @@ import { AppRoutingModule } from '../app-routing.module';
 import { ApprovalRoutingModule } from './approval-routing.module';
 import { AngularMaterialModule } from '../angular-material.module';
 import { EmployeeChangesComponent } from './employee-changes/employee-changes.component';
-import { ApprovalItemDisplayComponent } from './approval-item-display/approval-item-display.component';
 import { SharedModule } from '../shared/shared.module';
+import { TeamChangesComponent } from './team-changes/team-changes.component';
 
 
 
 @NgModule({
-  declarations: [ApprovalComponent, EmployeeChangesComponent, ApprovalItemDisplayComponent],
+  declarations: [ApprovalComponent, EmployeeChangesComponent, TeamChangesComponent],
   imports: [
     CommonModule,
     ApprovalRoutingModule,

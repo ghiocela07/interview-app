@@ -1,0 +1,35 @@
+.changes-container {
+    display: inline-flex;
+    padding: 20px;
+}
+
+.original {
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.changed {
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.label {
+    font-weight: 500;
+}
+
+.header {
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.member {
+    margin-left: 10px;
+}
+
+.old-red {
+    color: #f44336;
+}
+
+.new-green {
+    color: green;
+}

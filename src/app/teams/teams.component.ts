@@ -14,11 +14,16 @@ export class TeamsComponent implements OnInit {
 
   public teams: Team[] = [];
 
-  constructor(private teamsService: TeamsService) { }
+  constructor(private route: ActivatedRoute) { }
 
   public ngOnInit(): void {
-    this.teams = this.teamsService.getTeams();
+    this.route.data.subscribe(data => {
+      try {
+        this.teams = data.teams;
+      }
+      catch (error) {
+
+      }
+    });
   }
-
-
 }
