@@ -64,24 +64,12 @@ export class TeamsService {
 
     public async updateTeam(team: Team): Promise<void> {
 
-        let teamLeaderId = 0;
-        if (team.teamLeader !== undefined) {
-            teamLeaderId = team.teamLeader?.id ? team.teamLeader?.id : 0;
-        }
-        const apiTeam = new TeamApiData(
-            team.id,
-            team.name,
-            teamLeaderId,
-            []);
+        const apiTeam = this.setApiTeamData(team);
         team.members.forEach(member => {
             apiTeam.members.push(member.id);
         });
-        const response = await this.updateTeamToApi(apiTeam);
-        const updatedTeam = await this.convertTeam(response);
-        const updatedIndex = this.teams.findIndex(t => t.id === updatedTeam.id);
-        this.teams[updatedIndex] = updatedTeam;
+        await this.updateTeams(apiTeam);
         this.notificationService.successNotification('Team was updated successfully!');
-        this.teamsChanged.next(await this.getTeams());
     }
 
     public async deleteTeam(teamId: number): Promise<void> {
@@ -97,29 +85,31 @@ export class TeamsService {
         const result = await this.getTeams();
         return result.filter(r => !r.members.includes(employee));
     }
+    public async checkIfEmployeeIsTeamLeader(employeeId: number): Promise<boolean> {
+        const result = await this.getTeams();
+        const teamIndex = result.findIndex(r => r.teamLeader?.id === employeeId);
+        return teamIndex === -1 ? false : true;
+    }
 
     private async removeDeletedEmployeeFromTeam(employeeId: number, team: Team): Promise<void> {
-        let teamLeaderId = 0;
-        if (team.teamLeader !== undefined) {
-            teamLeaderId = team.teamLeader?.id === employeeId ? 0 : team.teamLeader?.id;
-        }
-        const apiTeam = new TeamApiData(
-            team.id,
-            team.name,
-            teamLeaderId,
-            []);
+
+        const apiTeam = this.setApiTeamData(team);
         team.members.forEach(member => {
             if (member.id !== employeeId) {
                 apiTeam.members.push(member.id);
             }
         });
 
+        await this.updateTeams(apiTeam);
+
+    }
+
+    private async updateTeams(apiTeam: TeamApiData): Promise<void> {
         const response = await this.updateTeamToApi(apiTeam);
         const updatedTeam = await this.convertTeam(response);
         const updatedIndex = this.teams.findIndex(t => t.id === updatedTeam.id);
         this.teams[updatedIndex] = updatedTeam;
         this.teamsChanged.next(await this.getTeams());
-
     }
 
     private async getTeamsFromApi(): Promise<Team[]> {
@@ -216,6 +206,19 @@ export class TeamsService {
 
     private setTeamsData(teamsData: Team[]): void {
         this.teams = teamsData;
+    }
+
+    private setApiTeamData(team: Team): TeamApiData {
+        let teamLeaderId = 0;
+        if (team.teamLeader !== undefined) {
+
+            teamLeaderId = team.teamLeader?.id ? team.teamLeader?.id : 0;
+        }
+        return new TeamApiData(
+            team.id,
+            team.name,
+            teamLeaderId,
+            []);
     }
 
 }

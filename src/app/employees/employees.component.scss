@@ -1,8 +1,16 @@
 .employees-container {
     margin: 20px;
+    width: 50%;
+    min-width: 400px;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 table {
+    min-width: 400px;
     width: 100%;
 }
 
@@ -38,4 +46,9 @@ tr.example-element-row:not(.example-expanded-row):active {
 
 .add-button {
     margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.right-column {
+    width: 40%;
 }

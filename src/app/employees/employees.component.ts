@@ -9,7 +9,9 @@ import { ApprovalType } from '../core/models/approval-type.enum';
 import { Employee } from '../core/models/employee.model';
 import { ApprovalService } from '../core/services/approval.service';
 import { EmployeeService } from '../core/services/employee.service';
+import { TeamsService } from '../core/services/teams.service';
 import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
+import { InformationDialogComponent } from '../shared/information-dialog/information-dialog.component';
 import { AddEmployeeToTeamComponent } from './add-employee-to-team/add-employee-to-team.component';
 
 
@@ -28,17 +30,19 @@ import { AddEmployeeToTeamComponent } from './add-employee-to-team/add-employee-
 export class EmployeesComponent implements OnInit, OnDestroy {
 
   public employees: Employee[] = [];
-  public columnsToDisplay = ['firstName', 'lastName', 'email', 'actions'];
+  // public columnsToDisplay = ['firstName', 'lastName', 'email', 'actions'];
+  public columnsToDisplay = ['name', 'actions'];
   public expandedElement: Employee | null | undefined;
 
   private employeesChangedSubscription: Subscription | undefined;
   private dialogSubscription: Subscription | undefined;
 
   constructor(private employeeService: EmployeeService,
-              private router: Router,
-              private route: ActivatedRoute,
-              private approvalService: ApprovalService,
-              private matDialog: MatDialog) { }
+    private router: Router,
+    private route: ActivatedRoute,
+    private approvalService: ApprovalService,
+    private teamsService: TeamsService,
+    private matDialog: MatDialog) { }
 
   public async ngOnInit(): Promise<void> {
     this.route.data.subscribe(data => {
@@ -62,26 +66,43 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     this.router.navigate(['new'], { relativeTo: this.route });
   }
 
-  public onDelete(employee: Employee): void {
-    const dialog = this.openDialog();
-    this.dialogSubscription = dialog.subscribe((confirm) => {
-      if (confirm) {
-        this.approvalService.addToQueue(ApprovalAction.Delete, ApprovalType.Employee, employee, employee);
-      }
-    });
+  public async onDelete(employee: Employee): Promise<void> {
+    const isTeamLeader = await this.teamsService.checkIfEmployeeIsTeamLeader(employee.id);
+    if (!isTeamLeader) {
+      const dialog = this.openConfirmationDialog();
+      this.dialogSubscription = dialog.subscribe((confirm) => {
+        if (confirm) {
+          this.approvalService.addToQueue(ApprovalAction.Delete, ApprovalType.Employee, employee, employee);
+        }
+      });
+    }
+    else{
+      this.openInformationDialog();
+    }
 
   }
 
-  public onAddToTeam(employee: Employee): void{
+  public onAddToTeam(employee: Employee): void {
     this.openAddToTeamDialog(employee);
   }
 
-  private openDialog(): Observable<boolean> {
+  private openConfirmationDialog(): Observable<boolean> {
     const dialogRef = this.matDialog.open(ConfirmationDialogComponent, {
       width: '350px',
       data: {
         confirmationMessage: 'Are you sure you want to delete this employee?',
-        pleaseNoteMessage: 'The employee will be removed from each team where he or she is a team leader or a team member.'
+        pleaseNoteMessage: 'The employee will be removed from each team where he or she is a team member.'
+      }
+    });
+
+    return dialogRef.afterClosed();
+  }
+
+  private openInformationDialog(): Observable<boolean> {
+    const dialogRef = this.matDialog.open(InformationDialogComponent, {
+      width: '350px',
+      data: {
+        informationMessage: 'The employee cannot be deleted because is a team leader!',
       }
     });
 

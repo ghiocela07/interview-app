@@ -7,11 +7,14 @@
             </div>
             <div>
                 <span class="mat-caption" *ngFor="let role of employee.roles">
-                {{role | roledisplay}} </span>
+                    {{role | roledisplay}} </span>
             </div>
         </div>
     </div>
-    <mat-divider [inset]="true"></mat-divider>
+
+    <mat-divider [inset]="dividerInset"></mat-divider>
+
+
     <div class="more-details">
         <mat-icon class="detail-icon">email</mat-icon>
         {{employee.email}}

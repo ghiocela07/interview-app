@@ -6,12 +6,12 @@
     <div class="details">
         <div *ngIf="team.teamLeader" class="team-leader">
             <mat-card color="primary" class="team-leader-card mat-elevation-z8">
-                <app-employee-item [employee]="team.teamLeader"></app-employee-item>
+                <app-employee-item [employee]="team.teamLeader" [dividerInset]="true"></app-employee-item>
             </mat-card>
         </div>
         <div class="members-list">
             <mat-card *ngFor="let member of team.members" class="member-card mat-elevation-z8">
-                <app-employee-item [employee]="member"></app-employee-item>
+                <app-employee-item [employee]="member" [dividerInset]="true"></app-employee-item>
             </mat-card>
         </div>
     </div>

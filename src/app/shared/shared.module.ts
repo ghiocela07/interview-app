@@ -17,7 +17,7 @@ import { InformationDialogComponent } from './information-dialog/information-dia
   ],
   imports: [
     CommonModule,
-    AngularMaterialModule
+    AngularMaterialModule,
   ],
   exports: [
     RoleDisplayPipe,

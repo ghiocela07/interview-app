@@ -9,6 +9,7 @@ import { Employee } from 'src/app/core/models/employee.model';
 export class EmployeeItemComponent implements OnInit {
 
   @Input() public employee: Employee | undefined;
+  @Input() public dividerInset = false;
   constructor() { }
 
   public ngOnInit(): void {
