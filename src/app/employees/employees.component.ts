@@ -43,11 +43,11 @@ export class EmployeesComponent implements OnInit, OnDestroy, AfterViewInit {
   private dialogSubscription: Subscription | undefined;
 
   constructor(private employeeService: EmployeeService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private approvalService: ApprovalService,
-    private teamsService: TeamsService,
-    private matDialog: MatDialog) { }
+              private router: Router,
+              private route: ActivatedRoute,
+              private approvalService: ApprovalService,
+              private teamsService: TeamsService,
+              private matDialog: MatDialog) { }
 
   public async ngOnInit(): Promise<void> {
     this.route.data.subscribe(data => {
