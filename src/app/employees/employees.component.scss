@@ -4,6 +4,12 @@
     min-width: 400px;
 }
 
+.employees-container-full {
+    margin: 20px;
+    width: 100%;
+    min-width: 800px;
+}
+
 .container {
     display: flex;
     flex-wrap: wrap;
@@ -51,4 +57,13 @@ tr.example-element-row:not(.example-expanded-row):active {
 
 .right-column {
     width: 40%;
+}
+
+.actions-column {
+    text-align: right;
+    width: 145px;
+}
+
+.column-header {
+    text-align: left;
 }

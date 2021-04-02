@@ -5,12 +5,14 @@ import { EmployeeItemComponent } from './employee-item/employee-item.component';
 import { AngularMaterialModule } from '../angular-material.module';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { InformationDialogComponent } from './information-dialog/information-dialog.component';
+import { RolesDisplayPipe } from './pipes/roles-display.pipe';
 
 
 
 @NgModule({
   declarations: [
     RoleDisplayPipe,
+    RolesDisplayPipe,
     EmployeeItemComponent,
     ConfirmationDialogComponent,
     InformationDialogComponent
@@ -21,6 +23,7 @@ import { InformationDialogComponent } from './information-dialog/information-dia
   ],
   exports: [
     RoleDisplayPipe,
+    RolesDisplayPipe,
     EmployeeItemComponent,
     ConfirmationDialogComponent,
     InformationDialogComponent

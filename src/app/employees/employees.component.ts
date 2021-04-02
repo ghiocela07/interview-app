@@ -1,8 +1,8 @@
 
 import { trigger, state, style, transition, animate } from '@angular/animations';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { ApprovalAction } from '../core/models/approval-action.enum';
 import { ApprovalType } from '../core/models/approval-type.enum';
@@ -27,12 +27,17 @@ import { AddEmployeeToTeamComponent } from './add-employee-to-team/add-employee-
     ]),
   ],
 })
-export class EmployeesComponent implements OnInit, OnDestroy {
+export class EmployeesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public employees: Employee[] = [];
-  // public columnsToDisplay = ['firstName', 'lastName', 'email', 'actions'];
-  public columnsToDisplay = ['name', 'actions'];
+  public columnsToDisplayFull = ['firstName', 'lastName', 'email', 'roles', 'actions'];
+  public columnsToDisplayShort = ['name', 'roles', 'actions'];
+  public columnsToDisplay = ['name', 'roles',  'actions'];
   public expandedElement: Employee | null | undefined;
+  // public isRouterActivate = false;
+  // public isRouterActivate = false;
+  @ViewChild('myOutlet', { static: true })
+  public myRouter: RouterOutlet | null | undefined;
 
   private employeesChangedSubscription: Subscription | undefined;
   private dialogSubscription: Subscription | undefined;
@@ -51,6 +56,26 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     this.employeesChangedSubscription = this.employeeService.employeesChanged.subscribe((employees: Employee[]) => {
       this.employees = employees;
     });
+    this.router.events.subscribe(
+      (event) => {
+        if (event instanceof NavigationEnd) {
+          if (!this.myRouter?.isActivated) {
+            this.columnsToDisplay = this.columnsToDisplayFull;
+          }
+          else {
+            this.columnsToDisplay = this.columnsToDisplayShort;
+          }
+        }
+      });
+  }
+
+  public ngAfterViewInit(): void {
+    if (!this.myRouter?.isActivated) {
+      this.columnsToDisplay = this.columnsToDisplayFull;
+    }
+    else {
+      this.columnsToDisplay = this.columnsToDisplayShort;
+    }
   }
 
   public ngOnDestroy(): void {
@@ -59,10 +84,12 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   public onEdit(employee: Employee): void {
+    this.columnsToDisplay = this.columnsToDisplayShort;
     this.router.navigate([employee.id + '/edit'], { relativeTo: this.route });
   }
 
   public onAdd(): void {
+    this.columnsToDisplay = this.columnsToDisplayShort;
     this.router.navigate(['new'], { relativeTo: this.route });
   }
 
@@ -76,10 +103,9 @@ export class EmployeesComponent implements OnInit, OnDestroy {
         }
       });
     }
-    else{
+    else {
       this.openInformationDialog();
     }
-
   }
 
   public onAddToTeam(employee: Employee): void {
