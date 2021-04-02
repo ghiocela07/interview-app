@@ -112,7 +112,6 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
 
   public hasError(controlName: string, errorType: string): boolean | undefined {
     const control = this.employeeForm?.get(controlName);
-
     return control?.hasError(errorType);
   }
 
@@ -129,7 +128,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
       firstName: new FormControl(this.employee?.firstName, [Validators.required]),
       lastName: new FormControl(this.employee?.lastName, [Validators.required]),
       email: new FormControl(this.employee?.email, [Validators.required, Validators.email]),
-      phone: new FormControl(this.employee?.phone, [Validators.required]),
+      phone: new FormControl(this.employee?.phone, [Validators.required, Validators.pattern('[- +()0-9]+')]),
       address: new FormControl(this.employee?.address, [Validators.required]),
       roles: rolesArray
     });
@@ -148,7 +147,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
       firstName: new FormControl(this.employee?.firstName, [Validators.required]),
       lastName: new FormControl(this.employee?.lastName, [Validators.required]),
       email: new FormControl(this.employee?.email, [Validators.required, Validators.email]),
-      phone: new FormControl(this.employee?.phone, [Validators.required]),
+      phone: new FormControl(this.employee?.phone, [Validators.required, Validators.pattern('[- +()0-9]+')]),
       address: new FormControl(this.employee?.address, [Validators.required]),
       roles: rolesArray
     });

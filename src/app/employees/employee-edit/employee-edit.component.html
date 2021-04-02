@@ -29,6 +29,7 @@
             <mat-label>Phone Number</mat-label>
             <input type="text" matInput formControlName="phone">
             <mat-error *ngIf="hasError('phone','required')">Phone number is required</mat-error>
+            <mat-error *ngIf="hasError('phone','pattern')">Phone number is invalid</mat-error>
         </mat-form-field>
         <mat-form-field>
             <mat-label>Address</mat-label>
